@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.INSTALL_PACKAGES,
+        Manifest.permission.REQUEST_INSTALL_PACKAGES,
     )
     private val REQUEST_PERMISSION_CODE = 200
     lateinit var recyclerView: RecyclerView
@@ -34,7 +35,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        ToastUtil.init(this)
         checkSelfPermission()
         initView()
         initData()
@@ -62,6 +62,9 @@ class MainActivity : AppCompatActivity() {
                     REQUEST_PERMISSION_CODE
                 )
             }
+        } else {
+            val scanTask = ScanTask()
+            scanTask.execute()
         }
     }
 
@@ -166,7 +169,6 @@ class MainActivity : AppCompatActivity() {
         override fun onPostExecute(result: List<String>?) {
             super.onPostExecute(result)
             swipeRefresh.isRefreshing = false
-            Log.e(TAG, "onPostExecute: " + result)
             ReadInfoTask().execute(result)
         }
     }
@@ -176,9 +178,7 @@ class MainActivity : AppCompatActivity() {
         override fun doInBackground(vararg p0: List<String>?): List<AppInfo> {
             val appInfoList: MutableList<AppInfo> = ArrayList()
             for (path in p0[0]!!) {
-                Log.e(TAG, "doInBackground: $path")
-                val info: AppInfo? = AppUtils.getFileInfo(path, this@MainActivity)
-//                val info: AppInfo? = apkutil.getAPKInfo(path, this@MainActivity)
+                val info: AppInfo? = AppUtils.getFileInfo(path)
                 if (info != null) {
                     appInfoList.add(info)
                 }
@@ -200,7 +200,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun isApkFile(file: String): Boolean {
-        return (file.endsWith(".apk") || file.endsWith(".xapk"))
+        return  file.endsWith(".xapk")
+//                ||file.endsWith(".apk")
     }
 
 }

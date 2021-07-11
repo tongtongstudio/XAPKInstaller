@@ -12,6 +12,12 @@ object FileUtils {
         return if (fileName.indexOf(".") == -1) fileNameEx else fileName
     }
 
+    fun getFileName(path:String):String{
+        val fileNameEx = path.substring(path.lastIndexOf(File.separator) + 1)
+        return fileNameEx
+    }
+
+
     fun Bytes2Bimap(b: ByteArray): Bitmap? {
         return if (b.size != 0) {
             BitmapFactory.decodeByteArray(b, 0, b.size)
@@ -19,4 +25,6 @@ object FileUtils {
             null
         }
     }
+
+
 }

@@ -26,7 +26,7 @@ object ToastUtil {
         mainHandler.post {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 time2 = System.currentTimeMillis()
-                if (time2 - time1 > 3499) {
+                if (time2 - time1 > 3500) {
                     showToast(mContext, msg, Toast.LENGTH_LONG)
                     //                        Log.e("fht", "LENGTH_LONG");
                     time1 = time2

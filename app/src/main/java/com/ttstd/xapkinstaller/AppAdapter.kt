@@ -1,21 +1,25 @@
 package com.ttstd.xapkinstaller
 
-import android.content.Context
-import android.util.Log
+import android.app.Activity
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 
-class AppAdapter(context: Context) : RecyclerView.Adapter<AppAdapter.AppHolder>() {
+
+class AppAdapter(context: Activity) : RecyclerView.Adapter<AppAdapter.AppHolder>() {
     private val TAG: String? = AppAdapter::class.simpleName
     var AppList: MutableList<AppInfo> = ArrayList()
     val mContext = context
 
     class AppHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val iv_root: ConstraintLayout = itemView.findViewById(R.id.root)
         var iv_icon: ImageView = itemView.findViewById(R.id.iv_icon)
         var tv_label: TextView = itemView.findViewById(R.id.tv_label)
         var tv_version: TextView = itemView.findViewById(R.id.tv_version)
@@ -34,12 +38,36 @@ class AppAdapter(context: Context) : RecyclerView.Adapter<AppAdapter.AppHolder>(
 
     override fun onBindViewHolder(holder: AppHolder, position: Int) {
         val info: AppInfo = AppList.get(position)
+        holder.iv_root.setOnClickListener {
+
+        }
         holder.iv_icon.setImageDrawable(info.icon)
         holder.tv_label.setText(info.label)
         holder.tv_version.setText(info.version)
         holder.tv_pkgname.setText(info.pkg)
         holder.tv_filepath.setText(info.filename)
         holder.tv_size.setText(info.size)
+        holder.bt_install.setOnClickListener {
+            if (info.apkFile) {
+                AppUtils.installAPK(info.filename.toString())
+            } else {
+                val builder = AlertDialog.Builder(mContext)
+                    .setTitle("安装XAPK")
+                    .setMessage("如果XAPK文件过大需要一段时间解压，是否安装？")
+                    .setIcon(info.icon)
+                    .setCancelable(false)
+                    .setNegativeButton("取消", { dialogInterface, i ->
+//                        dialogInterface.dismiss()
+                    })
+                    .setPositiveButton("安装", { dialogInterface, i ->
+//                        val intent = Intent(mContext, InstallActivity::class.java)
+//                        intent.putExtra(InstallActivity.FILE_PATH, info.filename.toString())
+//                        mContext.startActivity(intent)
+                        AppUtils.installXAPK(info.filename.toString())
+                    })
+                builder.show()
+            }
+        }
     }
 
     override fun getItemCount(): Int {
@@ -49,6 +77,5 @@ class AppAdapter(context: Context) : RecyclerView.Adapter<AppAdapter.AppHolder>(
 
     fun setData(list: MutableList<AppInfo>) {
         this.AppList = list
-        notifyDataSetChanged()
     }
 }
